@@ -217,12 +217,23 @@ function goMap(){
     opts.push({ k:'fight', ico:'⚔️', name:'লড়াই', desc:'শত্রু, তারপর পুরস্কার' });
     if (S.floor % 3 === 0 && S.floor > 2)
       opts.push({ k:'elite', ico:'👹', name:'অভিজাত', desc:'কঠিন, কিন্তু ভালো পুরস্কার' });
-    if (Math.random() < .55)
-      opts.push({ k:'rest', ico:'🔥', name:'বিশ্রাম', desc:'প্রাণ ফেরান বা কার্ড শান দিন' });
-    if (Math.random() < .5)
-      opts.push({ k:'shop', ico:'🛒', name:'দোকান', desc:'স্বর্ণ খরচ করুন' });
-    if (Math.random() < .35)
-      opts.push({ k:'event', ico:'❓', name:'রহস্য', desc:'কিছু অজানা আছে' });
+
+    const extra = [
+      { k:'rest',  ico:'🔥', name:'বিশ্রাম', desc:'প্রাণ ফেরান বা কার্ড শান দিন', p:.55 },
+      { k:'shop',  ico:'🛒', name:'দোকান',  desc:'স্বর্ণ খরচ করুন', p:.5 },
+      { k:'event', ico:'❓', name:'রহস্য',  desc:'কিছু অজানা আছে', p:.35 },
+    ].filter(o => Math.random() < o.p);
+
+    // always leave the player a real choice, not a single forced door
+    while (opts.length + extra.length < 2){
+      const missing = [
+        { k:'rest',  ico:'🔥', name:'বিশ্রাম', desc:'প্রাণ ফেরান বা কার্ড শান দিন' },
+        { k:'shop',  ico:'🛒', name:'দোকান',  desc:'স্বর্ণ খরচ করুন' },
+        { k:'event', ico:'❓', name:'রহস্য',  desc:'কিছু অজানা আছে' },
+      ].filter(o => !opts.some(x => x.k === o.k) && !extra.some(x => x.k === o.k));
+      extra.push(pick(missing));
+    }
+    opts.push(...extra);
   }
 
   const box = $('map-options');
